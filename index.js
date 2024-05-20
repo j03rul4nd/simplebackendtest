@@ -13,6 +13,15 @@ app.get('/', (req, res) => {
 // Crear el servidor WebSocket
 const wss = new WebSocketServer({ server });
 
+function isJsonString(str) {
+    try {
+        const obj = JSON.parse(str);
+        return obj && typeof obj === 'object';
+    } catch (e) {
+        return false;
+    }
+}
+
 wss.on('connection', (ws) => {
     console.log('New client connected');
 
@@ -21,24 +30,25 @@ wss.on('connection', (ws) => {
 
     // Manejar mensajes recibidos del cliente
     ws.on('message', (message) => {
-        if(typeof message === 'string'){
-            console.log(`Received message: ${message}`);
-            // Opcionalmente, puedes enviar una respuesta al cliente
-            ws.send(`You said: ${message}`);
-        }else{
+        if (isJsonString(message)) {
+            // Es un objeto JSON válido
             const msgObject = JSON.parse(message);
+            console.log('Received object:', msgObject);
+            
+            
             // Aquí puedes procesar el mensaje como desees
             // Por ejemplo, puedes emitir este mensaje a todos los clientes conectados
             wss.clients.forEach(client => {
-                if (client !== ws && client.readyState === WebSocket.OPEN) {
+                if (client !== ws && client.readyState === ws.OPEN) {
                     client.send(JSON.stringify(msgObject));
                 }
             });
+        } else {
+            // Es un string simple
+            console.log(`a Received message: ${message}`);
+            // Opcionalmente, puedes enviar una respuesta al cliente
+            ws.send(`You said: ${message}`);
         }
-
-
-      
-
     });
 
     // Manejar la desconexión del cliente
