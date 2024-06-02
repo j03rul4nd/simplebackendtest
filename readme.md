@@ -35,7 +35,7 @@ Este es un backend simple para crear salas de chat donde los usuarios pueden con
 1. Clona este repositorio en tu máquina local:
     
     ```bash
-    git clone <https://github.com/tu-usuario/chat-room-backend.git>
+    git clone <https://github.com/j03rul4nd/simplebackendtest.git> 
     cd chat-room-backend
     ```
     
