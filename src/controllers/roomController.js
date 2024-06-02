@@ -1,4 +1,4 @@
-import { rooms, handleCreateRoom, handleJoinRoom, handleMessage, handleGetConnectedClients, handleGetRoomsInfo } from '../services/roomService.js';
+import { rooms, handleCreateRoom, handleJoinRoom, handleMessage, handleGetConnectedClients, handleGetRoomsInfo, deleteRoom } from '../services/roomService.js';
 import { isJsonString } from '../utils/utils.js';
 
 export function handleWebSocketConnection(ws) {
@@ -54,8 +54,9 @@ function handleClientDisconnect(ws) {
             }
         });
 
+        
         if (rooms[ws.roomCode].length === 0) {
-            delete rooms[ws.roomCode];
+            deleteRoom(ws.roomCode);
         }
     }
 }

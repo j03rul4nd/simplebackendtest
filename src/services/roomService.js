@@ -11,6 +11,25 @@ export function handleCreateRoom(ws) {
     ws.roomCode = roomCode;
     console.log("Generated new room code:", roomCode);
     ws.send(JSON.stringify({ type: 'room_created', roomCode: roomCode }));
+
+    // Programar la eliminación de la sala después de una hora
+    setTimeout(() => {
+        deleteRoom(roomCode);
+    }, 60 * 60 * 1000); // 60 minutos * 60 segundos * 1000 milisegundos
+
+}
+
+export function deleteRoom(roomCode) {
+    if (rooms[roomCode]) {
+        rooms[roomCode].forEach(client => {
+            if (client.readyState === client.OPEN) {
+                client.send(JSON.stringify({ type: 'room_deleted', roomCode: roomCode, message: 'The room has been deleted due to time limit.' }));
+                client.close();
+            }
+        });
+        delete rooms[roomCode];
+        console.log(`Room ${roomCode} deleted after one hour.`);
+    }
 }
 
 export function handleJoinRoom(ws, roomCode) {
