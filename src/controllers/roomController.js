@@ -17,6 +17,7 @@ export function handleWebSocketConnection(ws) {
                 case 'join_room':
                     handleJoinRoom(ws, msgObject.roomCode);
                     break;
+                case 'responseMessage':
                 case 'message':
                     handleMessage(ws, msgObject);
                     break;
