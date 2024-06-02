@@ -1,4 +1,4 @@
-import { handleCreateRoom, handleJoinRoom, handleMessage, handleGetConnectedClients, handleGetRoomsInfo } from '../services/roomService.js';
+import { rooms, handleCreateRoom, handleJoinRoom, handleMessage, handleGetConnectedClients, handleGetRoomsInfo } from '../services/roomService.js';
 import { isJsonString } from '../utils/utils.js';
 
 export function handleWebSocketConnection(ws) {
@@ -41,10 +41,20 @@ export function handleWebSocketConnection(ws) {
     });
 }
 
+
 function handleClientDisconnect(ws) {
     if (ws.roomCode && rooms[ws.roomCode]) {
-        rooms[ws.roomCode] = rooms[ws.roomCode].filter(client => client != ws);
-        if (rooms[ws.roomCode].length == 0) {
+        rooms[ws.roomCode] = rooms[ws.roomCode].filter(client => client !== ws);
+
+        // Enviar el número actualizado de clientes conectados a todos en la sala
+        const clientCount = rooms[ws.roomCode].length;
+        rooms[ws.roomCode].forEach(client => {
+            if (client.readyState === ws.OPEN) {
+                client.send(JSON.stringify({ type: 'connected_clients', roomCode: ws.roomCode, count: clientCount }));
+            }
+        });
+
+        if (rooms[ws.roomCode].length === 0) {
             delete rooms[ws.roomCode];
         }
     }

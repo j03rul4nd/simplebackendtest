@@ -1,4 +1,4 @@
-const rooms = {};
+export const rooms = {};
 
 function generateRoomCode() {
     return Math.random().toString(36).substr(2, 8).toUpperCase();
@@ -59,3 +59,5 @@ export function handleGetRoomsInfo(ws) {
     }));
     ws.send(JSON.stringify({ type: 'rooms_info', rooms: roomsInfo }));
 }
+
+
